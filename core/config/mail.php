@@ -6,7 +6,7 @@ return [
   'ses'=>['transport'=>'ses'],
   'postmark'=>['transport'=>'postmark'],
   'resend'=>['transport'=>'resend'],
-  'sendmail'=>['transport'=>'sendmail','path'=>env('MAIL_SENDMAIL_PATH','/usr/sbin/sendmail -bs -i'),' newline'=>env('MAIL_NEWLINE','unix')],
+  'sendmail'=>['transport'=>'sendmail','path'=>env('MAIL_SENDMAIL_PATH','/usr/sbin/sendmail -bs -i'),'newline'=>env('MAIL_NEWLINE','unix')],
   'log'=>['transport'=>'log','channel'=>env('MAIL_LOG_CHANNEL')],
   'array'=>['transport'=>'array'],
   'failover'=>['transport'=>'failover','mailers'=>['smtp','log']],
