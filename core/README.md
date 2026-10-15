@@ -22,4 +22,4 @@ A clean Laravel application boundary, separate from the Worksuite application in
 
 ## Status
 
-This is a scaffold milestone and has not yet been run through Composer, migrations or HTTP smoke tests. Do not call it deployment-ready until those checks pass. AI copilot, multi-tenancy, and remaining CRM modules are not yet implemented. The original app and production database are intentionally untouched.
+The current branch passes GitHub Actions Composer validation, route registration and PHPUnit feature tests (11 tests, 19 assertions), including the Contacts module and its company relationship. This is still an early core milestone, not production-ready: it has not been deployed to staging, and multi-tenancy, roles/permissions, AI Copilot, and the remaining CRM modules are not implemented. The original app and production database are intentionally untouched.
