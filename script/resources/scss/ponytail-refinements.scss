@@ -1,0 +1,125 @@
+// Ponytail UI refinements: improve consistency without replacing Worksuite components.
+$pt-surface: #ffffff;
+$pt-border: #e4eaf2;
+$pt-text: #202c3b;
+$pt-muted: #64748b;
+$pt-primary: #276ef1;
+$pt-radius: 12px;
+
+body {
+    color: $pt-text;
+    -webkit-font-smoothing: antialiased;
+}
+
+.main-container {
+    min-height: calc(100vh - 64px);
+}
+
+.main-header {
+    min-height: 64px;
+    border-bottom: 1px solid $pt-border;
+    box-shadow: 0 2px 12px rgba(22, 34, 51, 0.035);
+}
+
+.main-sidebar {
+    border-right: 1px solid $pt-border;
+}
+
+.main-container .content-wrapper,
+.main-container .admin-dashboard {
+    padding-bottom: 2rem;
+}
+
+.admin-dashboard .card,
+.admin-dashboard .card-body,
+.admin-dashboard .bg-white {
+    border-color: $pt-border;
+}
+
+.admin-dashboard .card {
+    border-radius: $pt-radius;
+    box-shadow: 0 4px 18px rgba(22, 34, 51, 0.045);
+    transition: box-shadow 160ms ease, transform 160ms ease;
+}
+
+.admin-dashboard a .card:hover,
+.admin-dashboard a .widget:hover {
+    box-shadow: 0 8px 24px rgba(22, 34, 51, 0.09);
+}
+
+.dashboard-header {
+    border-bottom: 1px solid $pt-border;
+    gap: .5rem;
+}
+
+.dashboard-header .project-menu .p-sub-menu {
+    border-radius: 8px 8px 0 0;
+    transition: color 150ms ease, background-color 150ms ease;
+}
+
+.form-control,
+.select2-container--default .select2-selection--single,
+.bootstrap-select > .dropdown-toggle {
+    min-height: 38px;
+    border-color: #d5deea;
+    border-radius: 8px;
+}
+
+.form-control:focus {
+    border-color: $pt-primary;
+    box-shadow: 0 0 0 3px rgba(39, 110, 241, .12);
+}
+
+.btn {
+    border-radius: 8px;
+    font-weight: 500;
+    transition: box-shadow 150ms ease, transform 150ms ease;
+}
+
+.btn-primary {
+    box-shadow: 0 2px 5px rgba(39, 110, 241, .18);
+}
+
+.table thead th {
+    color: $pt-muted;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: .035em;
+    text-transform: uppercase;
+    border-bottom-color: $pt-border;
+}
+
+.table td {
+    vertical-align: middle;
+}
+
+.dropdown-menu {
+    border: 1px solid $pt-border;
+    border-radius: 10px;
+    box-shadow: 0 12px 30px rgba(22, 34, 51, .12);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        transition-duration: .01ms !important;
+        animation-duration: .01ms !important;
+        scroll-behavior: auto !important;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .main-header {
+        min-height: 56px;
+    }
+
+    .admin-dashboard {
+        padding-left: .75rem !important;
+        padding-right: .75rem !important;
+    }
+
+    .dashboard-header {
+        flex-wrap: wrap;
+    }
+}
