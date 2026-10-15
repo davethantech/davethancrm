@@ -7,8 +7,9 @@ A clean Laravel application boundary, separate from the Worksuite application in
 - Laravel/PHP foundation
 - First-run administrator creation, disabled after the first account exists
 - Session login/logout, CSRF protection and throttled login/setup routes
-- Dashboard, Leads CRUD, and Companies directory CRUD with search, pagination and validation
-- Dedicated users/leads migrations and a responsive starter UI
+- Dashboard, Leads CRUD, Companies directory CRUD, and Contacts CRUD linked to companies
+- Search, pagination, validation, dedicated migrations, and responsive Blade views
+- GitHub Actions CI validates Composer, route registration and PHPUnit feature tests
 
 ## Deployment checklist
 
