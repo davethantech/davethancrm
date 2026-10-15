@@ -1,5 +1,5 @@
 name: Davethan Core CI
-on:
+'on':
   push:
     paths:
       - 'core/**'
