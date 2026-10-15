@@ -1,7 +1,7 @@
 <?php
-namespace App\\Http\\Controllers;
-use App\\Models\\Lead;
-use Illuminate\\Support\\Facades\\Auth;
+namespace App\Http\Controllers;
+use App\Models\Lead;
+use Illuminate\Support\Facades\Auth;
 class DashboardController extends Controller {
     public function __invoke() {
         return view('dashboard', [
