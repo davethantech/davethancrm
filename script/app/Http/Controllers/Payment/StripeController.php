@@ -1,15 +1,15 @@
 <?php
 
-namespace App\\Http\\Controllers\\Payment;
+namespace App\Http\Controllers\Payment;
 
-use Stripe\\Stripe;
-use App\\Helper\\Reply;
-use App\\Models\\Invoice;
-use Illuminate\\Http\\Request;
-use App\\Traits\\MakePaymentTrait;
-use App\\Http\\Controllers\\Controller;
-use Illuminate\\Support\\Facades\\Session;
-use App\\Models\\PaymentGatewayCredentials;
+use Stripe\Stripe;
+use App\Helper\Reply;
+use App\Models\Invoice;
+use Illuminate\Http\Request;
+use App\Traits\MakePaymentTrait;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Session;
+use App\Models\PaymentGatewayCredentials;
 
 class StripeController extends Controller
 {
@@ -44,8 +44,8 @@ class StripeController extends Controller
     /**
      * Store a details of payment with paypal.
      *
-     * @param  \\Illuminate\\Http\\Request  $request
-     * @return \\Illuminate\\Http\\Response
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
      */
     public function paymentWithStripe(Request $request, $id)
     {
@@ -84,7 +84,7 @@ class StripeController extends Controller
     private function makeStripePayment($redirectRoute, $id, $param = null)
     {
         $param = $param ?? 'invoice';
-        $signedUrl = url()->temporarySignedRoute($redirectRoute, now()->addDays(\\App\\Models\\GlobalSetting::SIGNED_ROUTE_EXPIRY), [$param => $id]);
+        $signedUrl = url()->temporarySignedRoute($redirectRoute, now()->addDays(\App\Models\GlobalSetting::SIGNED_ROUTE_EXPIRY), [$param => $id]);
         Session::put('success', __('messages.paymentSuccessful'));
 
         return Reply::redirect($signedUrl, __('messages.paymentSuccessful'));
