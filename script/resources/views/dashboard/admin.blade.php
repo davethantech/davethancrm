@@ -15,12 +15,52 @@
             width: 600px;
         }
 
-        @media (max-width: 768px) {
-            .dashboard-settings {
-                width: 300px;
-            }
+        .dashboard-header {
+            align-items: center;
+            min-height: 64px;
+            padding: .5rem 1rem;
+            gap: .5rem;
         }
 
+        .dashboard-header .project-menu {
+            gap: .35rem;
+            align-items: center;
+        }
+
+        .dashboard-header .project-menu .p-sub-menu {
+            padding: .7rem .9rem;
+            border-radius: 8px 8px 0 0;
+            white-space: nowrap;
+        }
+
+        .dashboard-header .project-menu .p-sub-menu.active {
+            font-weight: 600;
+        }
+
+        .dashboard-settings.dropdown-menu {
+            max-height: min(70vh, 620px);
+            overflow-y: auto;
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-settings {
+                width: min(300px, calc(100vw - 24px));
+            }
+
+            .dashboard-header {
+                align-items: stretch;
+            }
+
+            .dashboard-header .project-menu {
+                max-width: 100%;
+                overflow-x: auto;
+                padding-bottom: .25rem;
+            }
+
+            .dashboard-header > .ml-auto {
+                margin-left: auto;
+            }
+        }
     </style>
 @endpush
 
@@ -76,9 +116,7 @@ $viewFinanceDashboard = user()->permission('view_finance_dashboard');
 
         </div>
 
-
-        <div class="ml-auto d-flex align-items-center justify-content-center ">
-
+        <div class="ml-auto d-flex align-items-center justify-content-center">
             <!-- DATE START -->
             <div
                 class="{{ request('tab') == 'overview' || request('tab') == '' ? 'd-none' : 'd-flex' }} align-items-center border-left-grey border-left-grey-sm-0 h-100 pl-4">
@@ -96,10 +134,9 @@ $viewFinanceDashboard = user()->permission('view_finance_dashboard');
                         <div class="dropdown keep-open">
                             <a class="d-flex align-items-center justify-content-center dropdown-toggle px-lg-4 border-left-grey text-dark"
                                type="link" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true"
-                               aria-expanded="false">
+                               aria-expanded="false" aria-label="{{ __('modules.dashboard.dashboardWidgetsSettings') }}">
                                 <i class="fa fa-cog" data-original-title="{{__('modules.dashboard.dashboardWidgetsSettings')}}" data-toggle="tooltip"></i>
                             </a>
-                            <!-- Dropdown - User Information -->
                             <ul class="dropdown-menu dropdown-menu-right dashboard-settings p-20"
                                 aria-labelledby="dropdownMenuLink" tabindex="0">
                                 <li class="border-bottom mb-3">
@@ -110,11 +147,10 @@ $viewFinanceDashboard = user()->permission('view_finance_dashboard');
                                         $wname = \Illuminate\Support\Str::camel($widget->widget_name);
                                     @endphp
                                     <li class="mb-2 float-left w-50">
-                                        <div class="checkbox checkbox-info ">
+                                        <div class="checkbox checkbox-info">
                                             <input id="{{ $widget->widget_name }}" name="{{ $widget->widget_name }}"
                                                    value="true" @if ($widget->status) checked @endif type="checkbox">
-                                            <label for="{{ $widget->widget_name }}">@lang('modules.dashboard.' .
-                                            $wname)</label>
+                                            <label for="{{ $widget->widget_name }}">@lang('modules.dashboard.' . $wname)</label>
                                         </div>
                                     </li>
                                 @endforeach
@@ -130,12 +166,10 @@ $viewFinanceDashboard = user()->permission('view_finance_dashboard');
                     </x-form>
                 </div>
             @endif
-
         </div>
 
         <a class="mb-0 d-block d-lg-none text-dark-grey mr-2 border-left-grey border-bottom-0"
-           onclick="openClientDetailSidebar()"><i class="fa fa-ellipsis-v"></i></a>
-
+           onclick="openClientDetailSidebar()" aria-label="{{ __('app.menu') }}"><i class="fa fa-ellipsis-v"></i></a>
     </div>
     <!-- FILTER END -->
     <!-- DASHBOARD HEADER END -->
@@ -143,9 +177,8 @@ $viewFinanceDashboard = user()->permission('view_finance_dashboard');
 @endsection
 
 @section('content')
-
     <!-- CONTENT WRAPPER START -->
-    <div class="px-4 py-0 py-lg-3  border-top-0 admin-dashboard">
+    <div class="px-4 py-0 py-lg-3 border-top-0 admin-dashboard">
         @include($view)
     </div>
     <!-- CONTENT WRAPPER END -->
@@ -171,16 +204,11 @@ $viewFinanceDashboard = user()->permission('view_finance_dashboard');
                 parentEl: '.dashboard-header'
             }, cb);
 
-
-            $('#datatableRange2').on('apply.daterangepicker', function (ev, picker) {
+            $('#datatableRange2').on('apply.daterangepicker', function () {
                 showTable();
             });
-
         });
-    </script>
 
-
-    <script>
         $(".dashboard-header").on("click", ".ajax-tab", function (event) {
             event.preventDefault();
 
@@ -189,7 +217,6 @@ $viewFinanceDashboard = user()->permission('view_finance_dashboard');
 
             const dateRangePicker = $('#datatableRange2').data('daterangepicker');
             let startDate = $('#datatableRange').val();
-
             let endDate;
 
             if (startDate === '') {
@@ -200,17 +227,12 @@ $viewFinanceDashboard = user()->permission('view_finance_dashboard');
                 endDate = dateRangePicker.endDate.format('{{ company()->moment_date_format }}');
             }
 
-            const requestUrl = this.href;
-
             $.easyAjax({
-                url: requestUrl,
+                url: this.href,
                 blockUI: true,
                 container: ".admin-dashboard",
                 historyPush: true,
-                data: {
-                    startDate: startDate,
-                    endDate: endDate
-                },
+                data: { startDate: startDate, endDate: endDate },
                 success: function (response) {
                     if (response.status === "success") {
                         $('.admin-dashboard').html(response.html);
@@ -221,16 +243,14 @@ $viewFinanceDashboard = user()->permission('view_finance_dashboard');
         });
 
         $('.keep-open .dropdown-menu').on({
-            "click": function (e) {
-                e.stopPropagation();
-            }
+            "click": function (e) { e.stopPropagation(); }
         });
 
         function showTable() {
             const dateRangePicker = $('#datatableRange2').data('daterangepicker');
             let startDate = $('#datatableRange').val();
-
             let endDate;
+
             if (startDate === '') {
                 startDate = null;
                 endDate = null;
@@ -239,16 +259,11 @@ $viewFinanceDashboard = user()->permission('view_finance_dashboard');
                 endDate = dateRangePicker.endDate.format('{{ company()->moment_date_format }}');
             }
 
-            const requestUrl = this.href;
-
             $.easyAjax({
-                url: requestUrl,
+                url: window.location.href,
                 blockUI: true,
                 container: ".admin-dashboard",
-                data: {
-                    startDate: startDate,
-                    endDate: endDate
-                },
+                data: { startDate: startDate, endDate: endDate },
                 success: function (response) {
                     if (response.status === "success") {
                         $('.admin-dashboard').html(response.html);
@@ -258,8 +273,6 @@ $viewFinanceDashboard = user()->permission('view_finance_dashboard');
             });
         }
 
-    </script>
-    <script>
         const activeTab = "{{ $activeTab }}";
         $('.project-menu .' + activeTab).addClass('active');
     </script>
