@@ -1,0 +1,33 @@
+name: First-party CRM Core CI
+on:
+  push:
+    paths:
+      - 'core/**'
+      - '.github/workflows/core-ci.yml'
+  pull_request:
+    paths:
+      - 'core/**'
+      - '.github/workflows/core-ci.yml'
+jobs:
+  laravel-smoke-test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: core
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: mbstring, pdo_sqlite, sqlite3, bcmath, ctype, fileinfo, json, openssl, tokenizer, xml
+          coverage: none
+      - uses: actions/cache@v4
+        with:
+          path: core/vendor
+          key: ${{ runner.os }}-composer-${{ hashFiles('core/composer.lock', 'core/composer.json') }}
+          restore-keys: ${{ runner.os }}-composer-
+      - run: composer install --no-interaction --prefer-dist
+      - run: cp .env.example .env
+      - run: php artisan key:generate
+      - run: php artisan route:list
+      - run: DB_CONNECTION=sqlite DB_DATABASE=:memory: php artisan migrate --force

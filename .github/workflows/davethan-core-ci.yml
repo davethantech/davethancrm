@@ -1,0 +1,32 @@
+name: Davethan Core CI
+on: [push, pull_request]
+jobs:
+  validate:
+    name: Validate Laravel core
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: mbstring, pdo_sqlite, sqlite3, bcmath, ctype, fileinfo, json, openssl, tokenizer, xml
+          coverage: none
+      - name: Validate Composer manifest
+        run: composer validate --no-check-publish
+        working-directory: core
+      - name: Install dependencies
+        run: composer install --no-interaction --prefer-dist
+        working-directory: core
+      - name: Configure environment
+        run: |
+          cp .env.example .env
+          php artisan key:generate
+        working-directory: core
+      - name: List routes
+        run: php artisan route:list
+        working-directory: core
+      - name: Run tests
+        run: vendor/bin/phpunit
+        working-directory: core

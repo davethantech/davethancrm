@@ -25,24 +25,36 @@ class QuickbookController extends AccountBaseController
     public function __construct()
     {
         parent::__construct();
-        $this->quickBooksSetting = QuickBooksSetting::first();
-        $this->quickBooksEnvironment = $this->quickBooksSetting->environment;
-        $this->quickBooksAccessToken = $this->quickBooksSetting->access_token;
-        $this->quickBooksRefreshToken = $this->quickBooksSetting->refresh_token;
-        $this->quickBooksRealmId = $this->quickBooksSetting->realmid;
-        $this->quickBooksClientId = $this->quickBooksEnvironment == 'Development' ? $this->quickBooksSetting->sandbox_client_id : $this->quickBooksSetting->client_id;
-        $this->quickBooksClientSecret = $this->quickBooksEnvironment == 'Development' ? $this->quickBooksSetting->sandbox_client_secret : $this->quickBooksSetting->client_secret;
+        $this->getCredentials();
     }
 
     public function getCredentials()
     {
         $this->quickBooksSetting = QuickBooksSetting::first();
+
+        // QuickBooks is optional until an administrator configures it.
+        // Keep the rest of the application usable on a fresh installation.
+        if (!$this->quickBooksSetting) {
+            $this->quickBooksEnvironment = null;
+            $this->quickBooksAccessToken = null;
+            $this->quickBooksRefreshToken = null;
+            $this->quickBooksRealmId = null;
+            $this->quickBooksClientId = null;
+            $this->quickBooksClientSecret = null;
+
+            return;
+        }
+
         $this->quickBooksEnvironment = $this->quickBooksSetting->environment;
         $this->quickBooksAccessToken = $this->quickBooksSetting->access_token;
         $this->quickBooksRefreshToken = $this->quickBooksSetting->refresh_token;
         $this->quickBooksRealmId = $this->quickBooksSetting->realmid;
-        $this->quickBooksClientId = $this->quickBooksEnvironment == 'Development' ? $this->quickBooksSetting->sandbox_client_id : $this->quickBooksSetting->client_id;
-        $this->quickBooksClientSecret = $this->quickBooksEnvironment == 'Development' ? $this->quickBooksSetting->sandbox_client_secret : $this->quickBooksSetting->client_secret;
+        $this->quickBooksClientId = $this->quickBooksEnvironment == 'Development'
+            ? $this->quickBooksSetting->sandbox_client_id
+            : $this->quickBooksSetting->client_id;
+        $this->quickBooksClientSecret = $this->quickBooksEnvironment == 'Development'
+            ? $this->quickBooksSetting->sandbox_client_secret
+            : $this->quickBooksSetting->client_secret;
     }
 
     public function index()

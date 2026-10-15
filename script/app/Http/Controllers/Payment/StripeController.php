@@ -26,8 +26,18 @@ class StripeController extends Controller
 
         $stripeCredentials = PaymentGatewayCredentials::first();
 
-        /** setup Stripe credentials **/
-        Stripe::setApiKey($stripeCredentials->stripe_mode == 'test' ? $stripeCredentials->test_stripe_secret : $stripeCredentials->live_stripe_secret);
+        // A fresh installation may not have configured a payment gateway yet.
+        // Do not let route discovery or unrelated pages crash when Stripe is unset.
+        if ($stripeCredentials) {
+            $secret = $stripeCredentials->stripe_mode === 'test'
+                ? $stripeCredentials->test_stripe_secret
+                : $stripeCredentials->live_stripe_secret;
+
+            if (filled($secret)) {
+                Stripe::setApiKey($secret);
+            }
+        }
+
         $this->pageTitle = __('app.stripe');
     }
 
@@ -44,7 +54,7 @@ class StripeController extends Controller
         $param = 'invoice';
         $paymentIntentId = $request->paymentIntentId;
 
-        if(isset($request->type) && $request->type == 'order'){
+        if (isset($request->type) && $request->type == 'order') {
             $redirectRoute = 'orders.show';
             $param = 'order';
             $invoice = Invoice::where('order_id', $id)->latest()->first();
@@ -67,16 +77,16 @@ class StripeController extends Controller
         $this->makePayment('Stripe', $invoice->amountDue(), $invoice, $paymentIntentId, 'complete');
         $invoice->status = 'paid';
         $invoice->save();
+
         return $this->makeStripePayment($redirectRoute, $hash, 'hash');
     }
 
-    private function makeStripePayment($redirectRoute, $id , $param = null)
+    private function makeStripePayment($redirectRoute, $id, $param = null)
     {
         $param = $param ?? 'invoice';
         $signedUrl = url()->temporarySignedRoute($redirectRoute, now()->addDays(\App\Models\GlobalSetting::SIGNED_ROUTE_EXPIRY), [$param => $id]);
         Session::put('success', __('messages.paymentSuccessful'));
-        
+
         return Reply::redirect($signedUrl, __('messages.paymentSuccessful'));
     }
-
 }
