@@ -1,7 +1,7 @@
 <?php
-namespace Tests\\Feature;
-use Tests\\TestCase;
-class CoreSmokeTest extends TestCase {
+namespace Tests\Feature;
+use Tests\TestCase;
+class CoreSmokeTest extends TestCase {\n use RefreshDatabase;
  public function test_health_endpoint_returns_success(): void {
   $this->get('/up')->assertOk();
  }
