@@ -1,7 +1,7 @@
 <?php
-namespace App\\Http\\Controllers;
-use App\\Models\\Lead;
-use Illuminate\\Http\\Request;
+namespace App\Http\Controllers;
+use App\Models\Lead;
+use Illuminate\Http\Request;
 class LeadController extends Controller {
     private function rules(): array { return ['name'=>'required|string|max:160','company'=>'nullable|string|max:180','email'=>'nullable|email|max:190','phone'=>'nullable|string|max:50','source'=>'nullable|string|max:80','status'=>'required|in:new,contacted,qualified,proposal,won,lost','value'=>'nullable|numeric|min:0|max:999999999','notes'=>'nullable|string|max:10000']; }
     public function index(Request $request) {
