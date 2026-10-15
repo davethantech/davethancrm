@@ -1,56 +1,99 @@
-# Davethan CRM / Worksuite — Recovery and Upgrade Plan
+# Davethan CRM — Rebuild and Product Delivery Plan
 
-## Correction
-The previous work diverged by creating a separate Next.js/Supabase CRM instead of treating `davethantech/davethancrm` as the source project. That separate rebuild is not the authoritative implementation and must not replace or be deployed over this project.
+Status: active implementation plan  
+Repository: `davethantech/davethancrm`  
+Working branch: `worksuite-upgrade-audit`  
+Application root: `script/`  
+Target stack: existing Laravel/PHP application and its current database technology; retain the established stack unless a measured technical blocker requires a reviewed change.
 
-## What the repository currently shows
-- The project is a PHP/Laravel application stored under `script/`.
-- `script/composer.json` identifies Laravel Framework `^10.0`, PHP `^8.1`, Laravel Modules, and Froiden/Worksuite-related packages, including `froiden/envato`.
-- The repository documentation identifies the application as Worksuite HR, CRM and Project Management.
-- The current dependency manifest contains Worksuite/vendor-specific integration points. Before changing activation or vendor-dependent code, establish that the deployment has a valid license/source entitlement. Do not patch out purchase verification or bypass vendor licensing.
-- Do not print, copy, or commit values from any environment files. Review tracked environment files for exposed credentials and rotate any real secrets found.
+## Product objective
 
-## Delivery rules
-1. Work only in a feature branch; keep `main` unchanged until changes are reviewed and tested.
-2. Preserve the existing Laravel application and its database schema wherever possible. No new standalone CRM foundation.
-3. Take a database and file backup before any schema change or VPS deployment. Never run destructive migrations against production as a first test.
-4. Build a feature inventory from routes, controllers, models, migrations, modules, views, and permissions. Record which modules work, fail, or need replacement.
-5. Add custom functionality through isolated Laravel modules/services, migrations, policies, tests, and UI components. Avoid editing vendor code when a supported extension point exists.
-6. If the current Worksuite source is not properly licensed, do not modify or bypass its protected activation/vendor code. Instead, rebuild the needed functionality using independently authored code in a clearly separated implementation, based only on lawful requirements and data schemas—not copied proprietary source.
-7. Test on staging first: dependency install, app boot, authentication/roles, CRUD flows, file uploads, email/queue/cron, reports, and migrations. Deploy only after checks pass and rollback is documented.
+Turn Davethan CRM into a maintainable, independently owned CRM and work-management product. The task is not limited to making the existing login page work. Rebuild fragile architecture, redesign the UI, preserve required business workflows, add CRM capabilities, and provide an AI copilot that can implement requested features against the repository.
 
-## Phases
-### Phase 0 — Safety and entitlement
-- Confirm the Worksuite edition/version and valid license/source entitlement.
-- Inspect Git history and deployment configuration without exposing secrets.
-- Identify any tracked credentials; remove them from future commits and rotate them if real.
-- Record the PHP, database, Node/build, queue, cache, storage, and cron requirements.
+The previous separate Next.js/Supabase implementation is not the source of truth and must not be deployed over this Laravel project.
 
-### Phase 1 — Read-only architecture audit
-- Inventory Laravel routes, controllers, models, migrations, policies/permissions, modules, frontend assets, tests, and dependencies.
-- Map core workflows: leads/clients, projects/tasks/time logs, proposals/estimates/invoices/payments, tickets, employees/attendance/leaves, settings, notifications, and reports.
-- Run safe static checks and test commands where an isolated environment is available.
-- Produce a prioritised gap/bug list with file paths and acceptance criteria.
+## Non-negotiable delivery rules
 
-### Phase 2 — Stabilise the existing app
-- Fix reproducible boot, dependency, configuration, security, and database issues first.
-- Add regression tests around existing workflows before refactoring.
-- Update framework/dependencies only as a separately tested upgrade—not as an unreviewed bulk version jump.
+1. Make changes on this feature branch. Keep `main` unchanged until reviewed and tested.
+2. Do not deploy speculative changes to the production VPS. Keep existing websites, Nginx sites, databases, and services isolated.
+3. Preserve data. No `migrate:fresh`, blind seeding, blanket dependency upgrades, or destructive database changes against production.
+4. Never run the all-in-one database seeder in production: it regenerates `APP_KEY` and creates sample users with known default passwords.
+5. Never expose or commit environment secrets. `script/.env.dev` is tracked and must be treated as potentially compromised; remove it from future commits and rotate any real credentials in it or its history.
+6. Do not evade a third-party license check to activate or use proprietary code without entitlement. The target product must not depend on Worksuite/Froiden purchasing checks: replace vendor-specific functionality with independently authored Davethan implementations where it is lawful to do so. Do not treat deleting a check from proprietary code as a product rebuild.
+7. Preserve the Laravel/PHP technology foundation and current database technology. Do not start a parallel standalone CRM.
+8. A feature is not complete because a route or page loads. It needs permissions, validation, persistence, error handling, tests, and documented acceptance criteria.
+9. No claim of successful build, test, or deployment without an actual recorded result.
 
-### Phase 3 — Advanced CRM enhancements
-Prioritise business value and deliver in small, tested increments:
-1. CRM pipeline: lead sources, stages, ownership, follow-up reminders, activity timeline, duplicate detection, and conversion tracking.
-2. Sales operations: configurable pipelines, deals/opportunities, quotes/proposals, customer communications, and revenue forecasting.
-3. Workflow automation: configurable triggers/actions, due-date reminders, assignment rules, email templates, and audit trail.
-4. Dashboards and reporting: sales funnel, ageing, conversion, revenue, project profitability, and exportable reports.
-5. Integrations and AI: only after permission controls, audit logging, and data handling are defined; use explicit user approval for external actions.
-6. UI/UX: improve navigation, responsive views, search, filters, saved views, bulk actions, and accessible forms without breaking current screens.
+## Target architecture
 
-### Phase 4 — Verification and deployment
-- Run automated tests and smoke-test the highest-value workflows.
-- Deploy to a staging path/database first; preserve existing websites, Nginx configuration, and unrelated VPS services.
-- Back up, apply reviewed migrations, verify health checks/logs, and keep a rollback path.
-- Document deployment and operations. Do not claim production deployment until it has actually been executed and verified.
+- **Application core:** Laravel routing, controllers, services/actions, jobs, events, policies, notifications, validation, logging, and migrations.
+- **Tenant and identity layer:** explicit tenant/company ownership, authentication, roles, granular permissions, and tenant-isolation tests. Avoid hidden assumptions that one singleton global-settings row always exists.
+- **Configuration:** environment/config defaults for deployment settings; tenant-scoped settings for organisation preferences; feature-specific settings in their owning domain. Missing optional settings must degrade safely and never cause a fatal boot or login error.
+- **Business domains:** CRM leads/contacts/accounts/deals; sales pipelines; activities and follow-ups; projects/tasks/time; proposals/quotes/invoices/payments; support tickets; reporting; users/teams/permissions; notifications and integrations.
+- **Integration boundary:** first-party interfaces and adapters for email, storage, AI providers, and external services. No core boot path should require a purchase-verification integration.
+- **UI:** coherent Davethan design system, responsive navigation, accessible forms, consistent tables/filters/search, loading/empty/error states, and reusable components. Retain existing useful workflows while replacing dated screens incrementally.
+- **AI copilot:** permission-aware feature-request intake, repository context retrieval, planning, isolated code changes, tests, review/diff, and controlled deployment. See `AI_COPILOT_SPEC.md`.
 
-## Immediate next action
-Complete the Phase 0/1 audit and publish findings before making functional changes. No production deployment or changes to `main` are authorised by this plan.
+## Work phases
+
+### Phase 0 — Protect the environment
+- Keep the VPS stable; do not reboot it or alter unrelated sites as part of this rebuild.
+- Back up the database and files before any deployment or schema mutation and verify that the backups are usable.
+- Audit tracked environment files and Git history without printing secrets; rotate any real exposed credentials.
+- Record PHP CLI and PHP-FPM versions, Composer/Node versions, database version, extensions, build scripts, queue, cron, storage, and deployment requirements.
+
+### Phase 1 — Repository inventory and dependency map
+- Inventory routes, controllers, models, migrations, policies, role/permission checks, modules, Blade/JS/CSS assets, tests, package dependencies, and scheduled commands.
+- Map each current workflow to its UI, route, controller/service, model/table, permissions, and tests.
+- Find every dependency on `GlobalSetting`, `global_settings`, `purchase_code`, Froiden Envato boot traits, installation markers, and vendor-specific licensing/purchasing packages.
+- Classify each dependency: remove from Davethan-owned code, replace with a first-party implementation, migrate data, or retain only in a lawful isolated legacy adapter.
+- Mark each module as keep, refactor, replace, or retire. Identify unused/duplicate routes and null-unsafe boot paths.
+- Record findings and acceptance criteria before changing behaviour.
+
+### Phase 2 — First-party boot and installation
+- Define a first-party setup/upgrade process that does not depend on a vendor installer or purchase check.
+- Use idempotent migrations and explicit setup commands. Separate schema migration, initial organisation setup, administrator creation, and optional demo data.
+- Never create default-password accounts. Create the first administrator through a one-time setup flow or secure CLI command that requires a supplied email and password.
+- Replace singleton assumptions with safe configuration and tenant-aware settings services. Missing optional settings should return validated defaults.
+- Remove purchase-specific dependencies from the rebuilt first-party application only after all call sites and data requirements have been mapped and replacement paths are tested.
+- Add tests for a clean database, an existing database with no settings rows, missing optional settings, and repeated setup attempts.
+
+### Phase 3 — Core product and UI redesign
+- Preserve and validate the required CRM and work-management workflows.
+- Build a consistent Davethan UI system and migrate screens in small increments.
+- Prioritise dashboard/navigation, leads and contacts, deals/pipelines, activity timeline, follow-ups, customers, projects/tasks, proposals/invoices, reports, user administration, and tenant settings.
+- Add CRM pipeline stages, ownership, lead sources, duplicate detection, assignment rules, reminders, revenue forecasts, saved views, exports, audit trails, and workflow automation.
+- Keep feature-specific configuration in its domain; avoid rebuilding a giant mandatory global-settings record.
+
+### Phase 4 — AI feature-development copilot
+- Implement the feature workflow in `AI_COPILOT_SPEC.md`.
+- The copilot must work against the actual Laravel repository and current branch, not generate detached snippets or a report pretending a feature was implemented.
+- Require a reviewable diff, tests, build results, and explicit deployment gate. Do not let AI silently alter production data, secrets, permissions, or unrelated sites.
+
+### Phase 5 — Quality gates
+- Unit/feature tests for authentication, roles, tenant isolation, CRUD, validation, settings defaults, and AI-generated changes.
+- Static analysis and formatting where configured; Composer install from lock file; frontend production build.
+- Smoke tests for login/logout, navigation, lead-to-deal workflow, customer/project/task operations, proposals/invoices, uploads, notifications, and reports.
+- Test migrations on a disposable database and on a staging copy before production.
+- Verify error logs, queue/cron, cache, storage permissions, and rollback.
+- Record each check as PASS/FAIL/NOT RUN with its command and output summary.
+
+### Phase 6 — Staging and production rollout
+- Deploy only after the branch passes the agreed quality gates and the deployment has a verified backup and rollback procedure.
+- Keep staging database and storage separate from production.
+- Preserve all unrelated VPS services and existing Nginx virtual hosts.
+- After deployment, verify the exact health endpoint and critical user flows. If verification fails, roll back rather than patching production ad hoc.
+
+## Immediate implementation order
+
+1. Finish the dependency and workflow inventory.
+2. Create a call-site map for global settings and purchase/licensing dependencies.
+3. Define the first-party configuration, tenant settings, and installation contracts.
+4. Add tests for missing settings and fresh setup before replacing call sites.
+5. Implement the UI redesign and core CRM improvements incrementally.
+6. Build the AI copilot behind explicit permissions and a controlled execution pipeline.
+7. Test and deploy through staging; do not change `main` until review.
+
+## Completion definition
+
+The rebuild is complete only when the application boots without vendor purchase dependencies, setup is repeatable and secure, required CRM workflows persist correctly, tenant/role boundaries are tested, the redesigned UI builds, the AI copilot can produce tested reviewable code changes, and staging/production checks are recorded. Removing a single error or making `/login` return HTTP 200 is not completion.
